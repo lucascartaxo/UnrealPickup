@@ -8,26 +8,25 @@
 UCLASS()
 class UNREALPICKUP_API APickupActor : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	APickupActor();
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	
-	// Called every frame
-	virtual void Tick( float DeltaSeconds ) override;
+    GENERATED_BODY()
     
-    // True when the pickup is able to be picked up, false is something deactivate the pickup
+public:
+    // Sets default values for this actor's properties
+    APickupActor(const class FObjectInitializer& ObjectInitializer);
+    
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
+    
+    // Called every frame
+    virtual void Tick( float DeltaSeconds ) override;
+    
+    // True when the pickup is able to be picked up, false if something deactivate the pickup
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PickupActor)
     bool bIsActive;
     
-    // Simpulate collision primitive to use as the root component
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = PickupActor);
-    TSubobjectPtr<USphereComponent> BaseCollisionComponent;;
-    
+    // Simple collision primitive to use as the root component
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = PickupActor)
+    TSubobjectPtr<USphereComponent> BaseCollisionComponent;
     
     // StaticMeshComponent to represent the pickup in the level
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = PickupActor)
@@ -36,7 +35,4 @@ public:
     // Function to call when the pickup is collected
     UFUNCTION(BlueprintNativeEvent)
     void OnPickedUp();
-
-	
-	
 };

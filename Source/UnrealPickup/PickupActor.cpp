@@ -3,10 +3,8 @@
 #include "UnrealPickup.h"
 #include "PickupActor.h"
 
-
 // Sets default values
-APickupActor::APickupActor()
-{
+APickupActor::APickupActor(const class FObjectInitializer& ObjectInitializer) {
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
     
@@ -14,13 +12,13 @@ APickupActor::APickupActor()
     bIsActive = true;
     
     // Create the root SphereComponent to handle the pickup's collision
-    BaseCollisionComponent = PCIP.CreateDefaultSubobject<USphereComponent>(this, TEXT("BaseSphereComponent"));
+    BaseCollisionComponent = ObjectInitializer.CreateDefaultSubobject<USphereComponent>(this, TEXT("BaseSphereComponent"));
     
     // Set the SphereComponent as the root component
     RootComponent = BaseCollisionComponent;
     
     // Create the static MeshComponent
-    PickupMesh = PCIP.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("PickupMesh"));
+    PickupMesh = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("PickupMesh"));
     
     // Turn Physics on for the static mesh
     PickupMesh->SetSimulatePhysics(true);
@@ -49,4 +47,3 @@ void APickupActor::OnPickedUp_Implementation()
 {
     // There is no default behavior for a pickup is picked up
 }
-
