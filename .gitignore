@@ -5,3 +5,6 @@
 
 UnrealPickup.xcodeproj/xcuserdata/*
 UnrealPickup.xcodeproj/project.xcworkspace/xcuserdata/*
+
+.DS_Store
+*.xcworkspace
