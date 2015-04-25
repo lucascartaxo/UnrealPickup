@@ -181,8 +181,5 @@ void AUnrealPickupCharacter::CollectBatteries()
 void AUnrealPickupCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-    PowerLevel = DeltaSeconds * 10000;
     CharacterMovement->MaxWalkSpeed = SpeedFactor * PowerLevel + BaseSpeed;
-    
-    PowerUp(PowerLevel);
 }
