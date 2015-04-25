@@ -2,6 +2,7 @@
 
 #include "UnrealPickup.h"
 #include "UnrealPickupCharacter.h"
+#include "BatteryPickupActor.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AUnrealPickupCharacter
@@ -9,6 +10,19 @@
 AUnrealPickupCharacter::AUnrealPickupCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+    
+    // Set a base power level for the character
+    PowerLevel = 200.f;
+
+    // Set the dependence of speed on the power level
+    SpeedFactor = 0.75f;
+    BaseSpeed = 10.f;
+    
+    // Create out Battery collection value
+    ColletionSphere = ObjectInitializer.CreateDefaultSubobject<USphereComponent>(this, TEXT("CollectionSphere"));
+    CollectionSphere->AttachTo(RootComponent);
+    CollectionSphere->SetSphereRadius(200.f);
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -51,6 +65,8 @@ void AUnrealPickupCharacter::SetupPlayerInputComponent(class UInputComponent* In
 	check(InputComponent);
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+    
+    InputComponent->BindAction("CollectPickups", IE_Pressed, this, &AUnrealPickupCharacter::CollectBatteries());
 
 	InputComponent->BindAxis("MoveForward", this, &AUnrealPickupCharacter::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AUnrealPickupCharacter::MoveRight);
@@ -117,7 +133,7 @@ void AUnrealPickupCharacter::MoveRight(float Value)
 	if ( (Controller != NULL) && (Value != 0.0f) )
 	{
 		// find out which way is right
-		const FRotator Rotation = Controller->GetControlRotation();
+        const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 	
 		// get right vector 
@@ -125,4 +141,45 @@ void AUnrealPickupCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+voud AUnrealPickupCharacter::CollectBatteries()
+{
+    float BatteryPower = 0.f;
+    
+    // Call all overlaping Actors and store them in a CollectedActors array
+    TArray<AActor*> CollectedActors;
+    CollectionSphere->GetOverlappingActors(CollectedActors);
+    
+    //Filtering only BatteryPickup actors
+    // for each actor collected
+    for(int32 CollectedCount = 0; iCollected < CollectedActors.Num(); ++CollectedCount)
+    {
+        // Cast the actor to a BatteryPickup
+        ABatteryPickupActor* TestBattery = Cast<ABatteryPickupActor>(CollectedActors[CollectedCount]);
+        
+        // if the cast is successful, and the battery is valid and active
+        if(TestBattery && !TestBattery->isPendingKill() && TestBattery->bIsActive()){
+            // Store its battery for adding to the character's power
+            BatteryPower = BatteryPower * TestBattery -> PowerLevel;
+            
+            // Call the Battery's OnPickedUp() function
+            TestBattery -> OnPickedUp();
+            
+            // Deactivate the battery
+            TestBattery -> bIsActive = false;
+        }
+    }
+    
+    if(BatteryPower > 0)
+    {
+        // Call the blueprinted implementation of PowerUp with the total battery power as input
+        PowerUp(BatteryPower);
+    }
+}
+
+voud AUnrealPickupCharacter::Tick(<#float DeltaSeconds#>)
+{
+    Supper::Tick(DeltaSeconds);
+    CharacterMovement -> MaxWalkSpeed = SpeedFactor * PowerLevel + BaseSpeed;
 }
