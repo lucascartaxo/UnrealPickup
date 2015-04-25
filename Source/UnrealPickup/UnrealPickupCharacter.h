@@ -21,7 +21,7 @@ public:
 
     /** Collection Volume */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Power)
-    TSubobjectPtr<class USphereComponent> ColletionSphere;
+    TSubobjectPtr<class USphereComponent> CollectionSphere;
     
     /** Power Level of Our Character */
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Power)
@@ -72,13 +72,13 @@ protected:
     void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
     
     /** Called when we press the key  to collect any batteries inside the SphereComponent */
-    UFUNCTION(BlueprintImplementableEvent, Category = Power)
+    UFUNCTION(BlueprintCallable, Category = Power)
     void CollectBatteries();
     
     /** Called by CollectBatteries() to use Blueprinted PowerUp() feature */
-    UPROPERTY(BlueprintCallable, Category = Power)
+    UFUNCTION(BlueprintImplementableEvent, Category = Power)
     void PowerUp(float BatteryPower);
-    
+
 protected:
     // APawn interface
     virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
