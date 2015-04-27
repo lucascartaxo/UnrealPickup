@@ -19,6 +19,7 @@ public:
     float PowerLevel;
     
     // Override the OnPickedUp function (use Implementation because this is a BlueprintNativeEvent)
+    UFUNCTION(BlueprintCallable, Category = Power)
     void OnPickedUp_Implementation() OVERRIDE;
     
 };
